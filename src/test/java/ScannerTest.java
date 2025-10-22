@@ -1,3 +1,4 @@
+import org.example.Scanner.Scanner;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -73,24 +74,29 @@ public class ScannerTest {
 
     @Test
     void testTokenizeFromFile(@TempDir Path tempDir) throws Exception {
-        String code =
-                "int foo;\n" +
-                        "// file comment\n" +
-                        "double z = 0.5;\n" +
-                        "char q = 'x';\n";
+        String code = """
+                int x;
+                // file comment
+                double z = 0.5;
+                char q = 'x';
+                """;
 
         Path file = tempDir.resolve("sample.c");
         Files.writeString(file, code);
-
-        String fileContent = Files.readString(file);
-        List<Token> tokens = org.example.Scanner.Scanner.Tokenize(fileContent);
-
-        assertNotNull(tokens);
-        assertTrue(tokens.stream().anyMatch(t -> t.getType() == TokenType.COMMENT && t.getValue().startsWith("// file comment")),
+        String fileContent = Scanner.getInputFile(file.toString());
+        List<Token> tokens = Scanner.Tokenize(fileContent);
+        assertNotNull(tokens, "Token list should not be null");
+        assertTrue(tokens.stream().anyMatch(t ->
+                        t.getType() == TokenType.COMMENT && t.getValue().startsWith("// file comment")),
                 "Expected file comment token");
-        assertTrue(tokens.stream().anyMatch(t -> t.getType() == TokenType.KEYWORD && t.getValue().equals("int")), "Expected keyword int");
-        assertTrue(tokens.stream().anyMatch(t -> t.getType() == TokenType.IDENTIFIER && t.getValue().equals("foo")), "Expected identifier foo");
-        assertTrue(tokens.stream().anyMatch(t -> t.getType() == TokenType.FLOAT_LITERAL || t.getType() == TokenType.INTEGER_LITERAL),
+        assertTrue(tokens.stream().anyMatch(t ->
+                        t.getType() == TokenType.KEYWORD && t.getValue().equals("int")),
+                "Expected keyword int");
+        assertTrue(tokens.stream().anyMatch(t ->
+                        t.getType() == TokenType.IDENTIFIER && t.getValue().equals("foo")),
+                "Expected identifier foo");
+        assertTrue(tokens.stream().anyMatch(t ->
+                        t.getType() == TokenType.FLOAT_LITERAL || t.getType() == TokenType.INTEGER_LITERAL),
                 "Expected numeric literal for z (float or integer depending on recognition)");
     }
 
