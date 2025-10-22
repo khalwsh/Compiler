@@ -66,29 +66,37 @@ public class Scanner {
         int pos = 0;
         final int n = code.length();
         while (pos < n) {
-            boolean matched = false;
+            int bestIndex = -1;
+            int bestEnd = -1;
+            String bestValue = null;
 
+            // Try every pattern and pick the longest match at this position
             for (int i = 0; i < order.length; ++i) {
-                Pattern p = patterns[i];
-                Matcher m = p.matcher(code);
+                Matcher m = patterns[i].matcher(code);
                 m.region(pos, n);
                 if (m.lookingAt()) {
-                    String value = m.group();
-                    TokenType type = order[i];
-
-                    if (!(skipWhitespace && type == TokenType.WHITESPACE)) {
-                        tokens.add(new Token(type, value));
+                    int end = m.end();
+                    // choose longest match; tie-breaker: earlier token in 'order'
+                    if (end > bestEnd || (end == bestEnd && bestIndex > i)) {
+                        bestIndex = i;
+                        bestEnd = end;
+                        bestValue = m.group();
                     }
-
-                    pos = m.end();
-                    matched = true;
-                    break;
                 }
             }
 
-            if (!matched) {
+            if (bestIndex == -1) {
+                // no token matched at current position
                 throw new IllegalArgumentException("Unexpected character at position " + pos + ": '" + code.charAt(pos) + "'");
             }
+
+            TokenType bestType = order[bestIndex];
+            if (!(skipWhitespace && bestType == TokenType.WHITESPACE)) {
+                tokens.add(new Token(bestType, bestValue));
+            }
+
+            // advance by the full best match length (maximal munch)
+            pos = bestEnd;
         }
 
         return tokens;
