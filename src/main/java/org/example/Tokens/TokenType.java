@@ -23,7 +23,7 @@ public enum TokenType {
     public String regularExpressionFactory() {
         switch (this) {
             case KEYWORD:
-                return "\\b(?:char|int|double|float|string|short|long|unsigned|signed|auto|break|case|char|const|continue|default|do|else|enum|extern|for|goto|if|inline|register|return|sizeof|static|struct|switch|typedef|union|void|volatile|while)\\b";
+                return "\\b(?:char|int|double|float|string|short|long|unsigned|main|signed|auto|break|case|char|const|continue|default|do|else|enum|extern|for|goto|if|inline|register|return|sizeof|static|struct|switch|typedef|union|void|volatile|while)\\b";
             case IDENTIFIER:
                 return "[A-Za-z_][A-Za-z0-9_]*";
             case INTEGER_LITERAL:

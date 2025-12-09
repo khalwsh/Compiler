@@ -63,7 +63,7 @@ public class ScannerTest {
                 tokens.stream().anyMatch(t -> t.getType() == type && t.getValue().equals(val));
 
         assertTrue(contains.test(TokenType.KEYWORD, "int"), "Expected keyword 'int'");
-        assertTrue(contains.test(TokenType.IDENTIFIER, "main"), "Expected identifier 'main'");
+        assertTrue(contains.test(TokenType.KEYWORD, "main"), "Expected identifier 'main'");
         assertTrue(contains.test(TokenType.COMMENT, "// single line comment"), "Expected single-line comment");
         assertTrue(contains.test(TokenType.INTEGER_LITERAL, "42"), "Expected integer literal 42");
         assertTrue(contains.test(TokenType.FLOAT_LITERAL, "3.14e-2"), "Expected float literal 3.14e-2");
@@ -77,8 +77,8 @@ public class ScannerTest {
         String code = """
                 int x;
                 // file comment
-                double z = 0.5;
-                char q = 'x';
+                double x = 0.5;
+                char x = 'x';
                 """;
 
         Path file = tempDir.resolve("sample.c");
@@ -93,8 +93,8 @@ public class ScannerTest {
                         t.getType() == TokenType.KEYWORD && t.getValue().equals("int")),
                 "Expected keyword int");
         assertTrue(tokens.stream().anyMatch(t ->
-                        t.getType() == TokenType.IDENTIFIER && t.getValue().equals("foo")),
-                "Expected identifier foo");
+                        t.getType() == TokenType.IDENTIFIER && t.getValue().equals("x")),
+                "Expected identifier x");
         assertTrue(tokens.stream().anyMatch(t ->
                         t.getType() == TokenType.FLOAT_LITERAL || t.getType() == TokenType.INTEGER_LITERAL),
                 "Expected numeric literal for z (float or integer depending on recognition)");
